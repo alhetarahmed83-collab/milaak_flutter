@@ -1,0 +1,83 @@
+# ==========================================
+# Flutter / Dart
+# ==========================================
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+
+# Generated Dart files (drift codegen)
+# Note: app_database.g.dart is COMMITTED intentionally to avoid requiring
+# build_runner on first clone. Remove this line if you prefer to regenerate.
+# lib/data/local/app_database.g.dart
+
+# ==========================================
+# IDEs & Editors
+# ==========================================
+# IntelliJ / Android Studio
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VS Code (uncomment if you don't want to share launch configs)
+# .vscode/
+
+# ==========================================
+# OS Files
+# ==========================================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.atom/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# ==========================================
+# Build Artifacts
+# ==========================================
+*.class
+*.log
+*.pyc
+app.*.symbols
+app.*.map.json
+
+# Android
+/android/app/debug
+/android/app/profile
+/android/app/release
+/android/build/
+
+# iOS
+ios/Flutter/flutter_export_environment.sh
+
+# ==========================================
+# Sensitive / Environment Files
+# ==========================================
+*.env
+*.env.*
+secrets.dart
+google-services.json
+GoogleService-Info.plist
+
+# ==========================================
+# Planning docs (optional - keep if desired)
+# ==========================================
+# PLAN.md
+# CONTRACT_MAINTENANCE_PLAN.md
+# DESIGN_UPDATE_PLAN.md
+# MILAAK_IMAGE_BASED_UI_REBUILD_PLAN.md
+# MILAAK_NEXT_FEATURES_PLAN.md
+
+# ==========================================
+# Folder with Arabic name (app mockup images)
+# ==========================================
+نماذج صور التطبيق/

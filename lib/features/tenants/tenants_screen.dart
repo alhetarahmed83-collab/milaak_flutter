@@ -46,7 +46,7 @@ class _TenantsScreenState extends ConsumerState<TenantsScreen> {
       ],
       action: IconButton.filled(
         tooltip: 'إضافة مستأجر',
-        onPressed: () => showMilaakSheet(context, const _TenantForm()),
+        onPressed: () => showMilaakSheet(context, const TenantForm()),
         icon: const Icon(Icons.person_add_alt_1_rounded),
       ),
       child: tenants.when(
@@ -80,6 +80,9 @@ class _TenantsScreenState extends ConsumerState<TenantsScreen> {
                         message: 'سجل أول مستأجر واربطه بعقار ووحدة.',
                       )
                     : ListView.separated(
+                        padding: const EdgeInsets.only(
+                          bottom: MilaakSpacing.floatingDockBottomInset + 16,
+                        ),
                         itemCount: filtered.length,
                         separatorBuilder: (_, __) => const SizedBox(height: 10),
                         itemBuilder: (context, index) =>
@@ -604,14 +607,14 @@ class TenantDetailsScreen extends ConsumerWidget {
   }
 }
 
-class _TenantForm extends ConsumerStatefulWidget {
-  const _TenantForm();
+class TenantForm extends ConsumerStatefulWidget {
+  const TenantForm({super.key});
 
   @override
-  ConsumerState<_TenantForm> createState() => _TenantFormState();
+  ConsumerState<TenantForm> createState() => _TenantFormState();
 }
 
-class _TenantFormState extends ConsumerState<_TenantForm> {
+class _TenantFormState extends ConsumerState<TenantForm> {
   final _formKey = GlobalKey<FormState>();
   final _name = TextEditingController();
   final _phone = TextEditingController();

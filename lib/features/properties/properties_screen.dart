@@ -42,7 +42,7 @@ class _PropertiesScreenState extends ConsumerState<PropertiesScreen> {
       ],
       action: IconButton.filled(
         tooltip: 'إضافة عقار',
-        onPressed: () => showMilaakSheet(context, const _PropertyForm()),
+        onPressed: () => showMilaakSheet(context, const PropertyForm()),
         icon: const Icon(Icons.add_rounded),
       ),
       child: properties.when(
@@ -74,6 +74,9 @@ class _PropertiesScreenState extends ConsumerState<PropertiesScreen> {
                         message: 'أضف أول عقار لتبدأ إدارة الوحدات والإيجارات.',
                       )
                     : ListView.separated(
+                        padding: const EdgeInsets.only(
+                          bottom: MilaakSpacing.floatingDockBottomInset + 16,
+                        ),
                         itemCount: filtered.length,
                         separatorBuilder: (_, __) => const SizedBox(height: 10),
                         itemBuilder: (context, index) {
@@ -122,9 +125,13 @@ class _PropertyCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           MilaakPropertyCover(
-            icon: property.type == 'commercial'
-                ? Icons.storefront_rounded
-                : Icons.apartment_rounded,
+            icon: switch (property.type) {
+              'villa' => Icons.villa_rounded,
+              'commercial_center' || 'commercial' => Icons.storefront_rounded,
+              'office_building' => Icons.business_rounded,
+              'warehouse' => Icons.warehouse_rounded,
+              _ => Icons.apartment_rounded,
+            },
           ),
           const SizedBox(height: 13),
           Row(
@@ -267,6 +274,7 @@ class PropertyDetailsScreen extends ConsumerWidget {
               lines: [
                 'العقار: ${property.name}',
                 'العنوان: ${property.address}',
+                'نوع العقار: ${propertyTypeName(property.type)}',
                 if ((property.ownerName ?? '').trim().isNotEmpty)
                   'المالك: ${property.ownerName}',
                 'عدد ${unitPluralFromPropertyType(property.type)}: ${units.length}',
@@ -429,14 +437,14 @@ class _UnitTile extends ConsumerWidget {
   }
 }
 
-class _PropertyForm extends ConsumerStatefulWidget {
-  const _PropertyForm();
+class PropertyForm extends ConsumerStatefulWidget {
+  const PropertyForm({super.key});
 
   @override
-  ConsumerState<_PropertyForm> createState() => _PropertyFormState();
+  ConsumerState<PropertyForm> createState() => _PropertyFormState();
 }
 
-class _PropertyFormState extends ConsumerState<_PropertyForm> {
+class _PropertyFormState extends ConsumerState<PropertyForm> {
   final _formKey = GlobalKey<FormState>();
   final _name = TextEditingController();
   final _address = TextEditingController();
@@ -445,7 +453,7 @@ class _PropertyFormState extends ConsumerState<_PropertyForm> {
   final _floors = TextEditingController(text: '1');
   final _unitsPerFloor = TextEditingController(text: '1');
   final _shops = TextEditingController(text: '0');
-  String _type = 'residential';
+  String _type = 'residential_building';
   String _electricityServiceMode = 'owner_meter';
   String _waterServiceMode = 'owner_meter';
   String _gasServiceMode = 'unavailable';
@@ -519,22 +527,27 @@ class _PropertyFormState extends ConsumerState<_PropertyForm> {
             ),
             const SizedBox(height: 12),
             const FieldTitle('نوع العقار'),
-            SegmentedButton<String>(
-              segments: const [
-                ButtonSegment(
-                  value: 'residential',
-                  label: Text('سكني'),
-                  icon: Icon(Icons.home_work_rounded),
-                ),
-                ButtonSegment(
-                  value: 'commercial',
-                  label: Text('تجاري'),
-                  icon: Icon(Icons.storefront_rounded),
-                ),
-              ],
-              selected: {_type},
-              onSelectionChanged: (value) =>
-                  setState(() => _type = value.first),
+            DropdownButtonFormField<String>(
+              value: _type,
+              isExpanded: true,
+              items:
+                  const [
+                        'villa',
+                        'residential_building',
+                        'commercial_center',
+                        'office_building',
+                        'mixed_use',
+                        'warehouse',
+                        'other',
+                      ]
+                      .map(
+                        (type) => DropdownMenuItem(
+                          value: type,
+                          child: Text(propertyTypeName(type)),
+                        ),
+                      )
+                      .toList(),
+              onChanged: (value) => setState(() => _type = value ?? _type),
             ),
             const SizedBox(height: 12),
             const FieldTitle('عدد الوحدات'),
@@ -704,7 +717,7 @@ class _UnitFormState extends ConsumerState<_UnitForm> {
             const FieldTitle('نوع الوحدة'),
             DropdownButtonFormField<String>(
               value: _type,
-              items: const ['apartment', 'office', 'shop', 'villa']
+              items: const ['apartment', 'office', 'shop', 'villa', 'warehouse']
                   .map(
                     (item) => DropdownMenuItem(
                       value: item,

@@ -172,7 +172,7 @@ class PdfService {
           return [
             'العقار: ${property.name}',
             'العنوان: ${property.address}',
-            'النوع: ${property.type == 'commercial' ? 'تجاري' : 'سكني'}',
+            'نوع العقار: ${propertyTypeName(property.type)}',
             'الوحدات: ${property.occupiedUnits}/${property.units}',
             'الشاغرة: $vacant',
             'الدخل المتوقع: ${formatCurrency(property.monthlyIncome)}',

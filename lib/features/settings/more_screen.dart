@@ -20,12 +20,13 @@ class MoreScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(),
       body: ScreenScaffold(
         title: 'المزيد',
         subtitle: 'التقارير والرسائل والصيانة والإعدادات.',
         child: ListView(
-          padding: const EdgeInsets.only(bottom: 18),
+          padding: const EdgeInsets.only(
+            bottom: MilaakSpacing.floatingDockBottomInset + 18,
+          ),
           children: [
             _MoreTile(
               icon: Icons.bar_chart_rounded,

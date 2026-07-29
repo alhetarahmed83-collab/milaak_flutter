@@ -3,16 +3,53 @@ String unitSingularFromUnitType(String unitType) {
     'office' => 'مكتب',
     'shop' => 'محل',
     'villa' => 'فيلا',
+    'warehouse' => 'مستودع',
     _ => 'شقة',
   };
 }
 
+String propertyTypeName(String propertyType) {
+  return switch (propertyType) {
+    'villa' => 'فيلا',
+    'residential_building' || 'residential' => 'عمارة سكنية',
+    'commercial_center' || 'commercial' => 'مركز تجاري',
+    'office_building' => 'مبنى مكاتب',
+    'mixed_use' => 'مبنى متعدد الاستخدامات',
+    'warehouse' => 'مستودع',
+    _ => 'أخرى',
+  };
+}
+
 String unitPluralFromPropertyType(String propertyType) {
-  return propertyType == 'commercial' ? 'محلات' : 'شقق';
+  return switch (propertyType) {
+    'villa' => 'فلل',
+    'commercial_center' || 'commercial' => 'محلات',
+    'office_building' => 'مكاتب',
+    'warehouse' => 'مستودعات',
+    'mixed_use' || 'other' => 'وحدات',
+    _ => 'شقق',
+  };
 }
 
 String unitSingularFromPropertyType(String propertyType) {
-  return propertyType == 'commercial' ? 'محل' : 'شقة';
+  return switch (propertyType) {
+    'villa' => 'فيلا',
+    'commercial_center' || 'commercial' => 'محل',
+    'office_building' => 'مكتب',
+    'warehouse' => 'مستودع',
+    'mixed_use' || 'other' => 'وحدة',
+    _ => 'شقة',
+  };
+}
+
+String defaultUnitTypeForPropertyType(String propertyType) {
+  return switch (propertyType) {
+    'villa' => 'villa',
+    'commercial_center' || 'commercial' => 'shop',
+    'office_building' => 'office',
+    'warehouse' => 'warehouse',
+    _ => 'apartment',
+  };
 }
 
 String formatUnitShort(

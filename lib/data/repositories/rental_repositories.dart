@@ -191,6 +191,7 @@ class PropertiesRepository {
                   propertyName: name,
                   unitNo: '$floor-$index',
                   floor: Value(floor.toString()),
+                  type: Value(defaultUnitTypeForPropertyType(type)),
                 ),
               );
         }

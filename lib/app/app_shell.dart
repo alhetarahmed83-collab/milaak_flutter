@@ -1,6 +1,3 @@
-import 'dart:math' as math;
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 
 import '../features/contracts/contracts_screen.dart';
@@ -10,6 +7,7 @@ import '../features/properties/properties_screen.dart';
 import '../features/settings/more_screen.dart';
 import '../features/tenants/tenants_screen.dart';
 import '../shared/widgets/form_helpers.dart';
+import '../shared/widgets/glass_bottom_dock.dart';
 import '../shared/widgets/milaak_ui.dart';
 import 'theme.dart';
 
@@ -34,22 +32,22 @@ class _AppShellState extends State<AppShell> {
   ];
 
   static const _items = [
-    _NavItem(
+    GlassDockItem(
       icon: Icons.dashboard_outlined,
       selectedIcon: Icons.dashboard_rounded,
       label: 'الرئيسية',
     ),
-    _NavItem(
+    GlassDockItem(
       icon: Icons.apartment_outlined,
       selectedIcon: Icons.apartment_rounded,
       label: 'العقارات',
     ),
-    _NavItem(
+    GlassDockItem(
       icon: Icons.groups_outlined,
       selectedIcon: Icons.groups_rounded,
       label: 'المستأجرون',
     ),
-    _NavItem(
+    GlassDockItem(
       icon: Icons.grid_view_outlined,
       selectedIcon: Icons.grid_view_rounded,
       label: 'المزيد',
@@ -88,11 +86,11 @@ class _AppShellState extends State<AppShell> {
             child: SafeArea(
               top: false,
               bottom: true,
-              child: _FloatingGlassDock(
+              child: GlassBottomDock(
                 index: _index,
                 items: _items,
                 onSelected: _selectTab,
-                onAdd: _showQuickAddSheet,
+                onAdd: _showContextualAdd,
               ),
             ),
           ),
@@ -121,328 +119,21 @@ class _AppShellState extends State<AppShell> {
     );
   }
 
+  void _showContextualAdd() {
+    switch (_index) {
+      case 1:
+        showMilaakSheet<void>(context, const PropertyForm());
+        return;
+      case 2:
+        showMilaakSheet<void>(context, const TenantForm());
+        return;
+      default:
+        _showQuickAddSheet();
+    }
+  }
+
   void _openPage(Widget page) {
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
-  }
-}
-
-class _FloatingGlassDock extends StatelessWidget {
-  const _FloatingGlassDock({
-    required this.index,
-    required this.items,
-    required this.onSelected,
-    required this.onAdd,
-  });
-
-  final int index;
-  final List<_NavItem> items;
-  final ValueChanged<int> onSelected;
-  final VoidCallback onAdd;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final totalWidth = math.min(constraints.maxWidth - 24, 336.0);
-        const addButtonSize = 60.0;
-        const gap = 8.0;
-        final dockWidth = math.max(0.0, totalWidth - addButtonSize - gap);
-        return SizedBox(
-          width: totalWidth,
-          height: 76,
-          child: Row(
-            textDirection: TextDirection.ltr,
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: dockWidth,
-                height: 72,
-                child: _GlassDockSurface(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
-                    ),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Row(
-                        textDirection: TextDirection.ltr,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _DockNavButton(
-                            item: items[0],
-                            selected: index == 0,
-                            onTap: () => onSelected(0),
-                          ),
-                          const SizedBox(width: 6),
-                          _DockNavButton(
-                            item: items[1],
-                            selected: index == 1,
-                            onTap: () => onSelected(1),
-                          ),
-                          const SizedBox(width: 6),
-                          _DockNavButton(
-                            item: items[2],
-                            selected: index == 2,
-                            onTap: () => onSelected(2),
-                          ),
-                          const SizedBox(width: 6),
-                          _DockNavButton(
-                            item: items[3],
-                            selected: index == 3,
-                            onTap: () => onSelected(3),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: gap),
-              _DockAddButton(onTap: onAdd),
-            ],
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _GlassDockSurface extends StatelessWidget {
-  const _GlassDockSurface({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = MilaakColors.isDark(context);
-    final fill = isDark
-        ? Colors.white.withValues(alpha: .08)
-        : Colors.white.withValues(alpha: .24);
-    final border = Colors.white.withValues(alpha: isDark ? .12 : .20);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(36),
-      child: BackdropFilter(
-        filter: ui.ImageFilter.blur(sigmaX: 34, sigmaY: 34),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: fill,
-            borderRadius: BorderRadius.circular(36),
-            border: Border.all(color: border),
-            boxShadow: [
-              BoxShadow(
-                color: (isDark ? Colors.black : const Color(0xFF0F172A))
-                    .withValues(alpha: .12),
-                blurRadius: 24,
-                offset: const Offset(0, 12),
-              ),
-            ],
-          ),
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(36),
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Colors.white.withValues(alpha: isDark ? .22 : .32),
-                          Colors.white.withValues(alpha: .04),
-                          Colors.transparent,
-                        ],
-                        stops: const [0, .35, 1],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(36),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.white.withValues(alpha: isDark ? .06 : .16),
-                          Colors.transparent,
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              child,
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _DockNavButton extends StatelessWidget {
-  const _DockNavButton({
-    required this.item,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final _NavItem item;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = MilaakColors.isDark(context);
-    final selectedFill = isDark
-        ? Colors.white.withValues(alpha: .72)
-        : Colors.white.withValues(alpha: .84);
-    final selectedBorder = isDark
-        ? Colors.white.withValues(alpha: .20)
-        : Colors.white.withValues(alpha: .34);
-    final iconColor = selected
-        ? MilaakColors.charcoal
-        : MilaakColors.textSoftFor(context);
-
-    return Tooltip(
-      message: item.label,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(19),
-          onTap: onTap,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 240),
-            curve: Curves.easeOutCubic,
-            height: 40,
-            width: selected ? 78 : 42,
-            padding: EdgeInsets.symmetric(horizontal: selected ? 8 : 0),
-            decoration: BoxDecoration(
-              color: selected ? selectedFill : Colors.transparent,
-              borderRadius: BorderRadius.circular(19),
-              border: selected ? Border.all(color: selectedBorder) : null,
-              boxShadow: selected
-                  ? [
-                      BoxShadow(
-                        color: (isDark ? Colors.black : const Color(0xFF0F172A))
-                            .withValues(alpha: .08),
-                        blurRadius: 12,
-                        offset: const Offset(0, 5),
-                      ),
-                    ]
-                  : null,
-            ),
-            child: Row(
-              textDirection: TextDirection.ltr,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AnimatedScale(
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeOutCubic,
-                  scale: selected ? 1 : .96,
-                  child: Icon(
-                    selected ? item.selectedIcon : item.icon,
-                    color: iconColor,
-                    size: 20,
-                  ),
-                ),
-                if (selected)
-                  Flexible(
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 200),
-                      switchInCurve: Curves.easeOutCubic,
-                      switchOutCurve: Curves.easeInCubic,
-                      transitionBuilder: (child, animation) {
-                        return FadeTransition(
-                          opacity: animation,
-                          child: SlideTransition(
-                            position: Tween<Offset>(
-                              begin: const Offset(.16, 0),
-                              end: Offset.zero,
-                            ).animate(animation),
-                            child: child,
-                          ),
-                        );
-                      },
-                      child: Padding(
-                        key: ValueKey(item.label),
-                        padding: const EdgeInsetsDirectional.only(start: 6),
-                        child: Text(
-                          item.label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: false,
-                          style: TextStyle(
-                            color: MilaakColors.charcoal,
-                            fontWeight: FontWeight.w900,
-                            fontSize: 9.5,
-                            height: 1,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _DockAddButton extends StatelessWidget {
-  const _DockAddButton({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        customBorder: const CircleBorder(),
-        onTap: onTap,
-        child: Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [MilaakColors.primary, MilaakColors.primaryDark],
-            ),
-            border: Border.all(color: Colors.white.withValues(alpha: .22)),
-            boxShadow: MilaakShadows.lift(MilaakColors.primaryDark),
-          ),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Center(
-                child: Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withValues(alpha: .10),
-                  ),
-                ),
-              ),
-              const Center(
-                child: Icon(Icons.add_rounded, color: Colors.white, size: 30),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }
 
@@ -577,16 +268,4 @@ class _QuickAddTile extends StatelessWidget {
       ),
     );
   }
-}
-
-class _NavItem {
-  const _NavItem({
-    required this.icon,
-    required this.selectedIcon,
-    required this.label,
-  });
-
-  final IconData icon;
-  final IconData selectedIcon;
-  final String label;
 }

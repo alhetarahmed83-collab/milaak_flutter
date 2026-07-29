@@ -54,14 +54,7 @@ class ScreenScaffold extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 14),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    bottom: MilaakSpacing.floatingDockBottomInset,
-                  ),
-                  child: child,
-                ),
-              ),
+              Expanded(child: child),
               if (footer != null) ...[const SizedBox(height: 12), footer!],
             ],
           ),

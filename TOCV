@@ -1,0 +1,371 @@
+# 1. Project Overview
+
+**Project Name:** Milaak / مِلاك  
+**Project Type:** Cross-platform mobile application  
+**Business Domain:** Property management / rental operations  
+**Primary Purpose:** Local-first Arabic mobile app for managing properties, units, tenants, lease contracts, rent schedules, payments, utility bills, maintenance tickets, documents, reminders, and financial reports.  
+**Target Users:** Individual landlords and small property offices.  
+**Main Business Value:** Centralizes rental operations in an offline-capable mobile app using local SQLite storage, reducing manual tracking across paper, spreadsheets, and messaging apps.
+
+# 2. Resume Summary (Very Important)
+
+- Built a Flutter/Dart local-first property management mobile app with Arabic RTL support, Material 3 UI, Riverpod state management, and Drift/SQLite persistence.
+- Implemented rental workflows covering properties, units, tenants, contracts, rent schedules, payments, utility bills, maintenance, reports, and audit logs.
+- Designed repository-based data access with transactional updates for contract approval, payment settlement, unit occupancy, debt tracking, and service billing.
+- Integrated PDF generation, local notifications, WhatsApp/SMS/share messaging, local device authentication, backup export, and automated Flutter tests.
+
+# 3. Core Features
+
+- Property and unit portfolio management
+- Tenant profile and account statement management
+- Lease contract approval, termination, and rent schedule generation
+- Rent collection, receipts, debt updates, and utility bill settlement
+- Utility service billing for owner, tenant, shared, and externally paid meters
+- Maintenance ticket tracking
+- Financial dashboard and reporting with charts
+- PDF report and receipt generation
+- Arabic message templates with WhatsApp/SMS/share flows
+- Local backup export, attachments, settings, theme mode, audit logs, and device-lock authentication
+
+# 4. Technical Stack
+
+**Programming Languages**
+
+- Dart
+- Kotlin
+- Swift
+
+**Mobile / Frontend**
+
+- Flutter
+- Material 3
+- Flutter localizations
+- Arabic RTL UI
+- Light/dark/system theme modes
+- Custom reusable Flutter widgets
+
+**State Management**
+
+- flutter_riverpod
+- StreamProvider
+- FutureProvider
+- Provider-based dependency access
+
+**Navigation**
+
+- go_router
+- MaterialApp.router
+
+**Database / ORM**
+
+- SQLite
+- Drift
+- sqlite3_flutter_libs
+- Drift code generation
+
+**Authentication / Security**
+
+- local_auth
+- flutter_secure_storage dependency present
+- Local device biometric/PIN authentication
+
+**Documents / Files / Storage**
+
+- pdf
+- printing
+- open_filex
+- file_picker
+- path_provider
+- share_plus
+
+**Notifications / Messaging**
+
+- flutter_local_notifications
+- url_launcher
+- WhatsApp URL launch
+- SMS launch
+- System share sheet
+
+**Charts / UI Data Visualization**
+
+- fl_chart
+
+**Build Tools**
+
+- Flutter SDK
+- Dart SDK
+- build_runner
+- drift_dev
+- flutter_launcher_icons
+- flutter_native_splash
+
+**Testing**
+
+- flutter_test
+- Drift in-memory database tests
+- Widget tests
+
+**Code Quality**
+
+- flutter_lints
+- analysis_options.yaml
+
+# 5. Architecture Analysis
+
+The project uses a **layered, feature-based Flutter architecture**.
+
+Evidence:
+
+- `lib/features/` separates UI modules such as dashboard, properties, tenants, contracts, payments, reports, settings, services, maintenance, messages, and attachments.
+- `lib/data/local/` contains Drift database schema and generated database code.
+- `lib/data/repositories/` contains repository classes for domain data operations.
+- `lib/services/` isolates PDF, notification, message, and lock behavior.
+- `lib/shared/widgets/` contains reusable UI components.
+- `lib/app/` contains routing, app shell, startup gate, and theme configuration.
+
+Recognized patterns:
+
+- **Layered Architecture:** UI, repositories, services, local database.
+- **Feature-Based Architecture:** screens are grouped by business module.
+- **Repository Pattern:** verified by repository classes such as `PropertiesRepository`, `TenantsRepository`, `ContractsRepository`, `PaymentsRepository`, and others.
+- **Service Layer:** verified by `PdfService`, `NotificationService`, `MessageService`, and `LockService`.
+- **Dependency Injection style via Riverpod:** repositories and database are exposed through Riverpod providers.
+- **Reactive local data flow:** Drift streams are exposed through Riverpod `StreamProvider`.
+
+Scalability is suitable for a local-first mobile app. There is no verified server-side architecture, multi-tenant backend, or distributed infrastructure.
+
+# 6. Software Engineering Practices
+
+- **OOP:** Verified through Dart classes for screens, services, repositories, database tables, and widgets.
+- **Reusable Components:** Verified under `lib/shared/widgets/`, including scaffold, cards, form helpers, bottom dock, empty states, and brand widgets.
+- **Modular Design:** Verified by feature folders and separate app, core, data, services, and shared layers.
+- **Repository Pattern:** Verified by dedicated repository classes for each domain area.
+- **Service Layer:** Verified by separate services for PDF, messages, notifications, and local lock.
+- **Error Handling:** Verified in PDF generation and messaging flows using try/catch and fallback behavior.
+- **Validation:** Verified in contract approval logic and form-driven screens; contract mismatch throws `StateError`.
+- **Documentation:** README, planning documents, UI analysis documents, and roadmap-style markdown files exist.
+- **Configuration Management:** Verified through `pubspec.yaml`, `analysis_options.yaml`, Android/iOS configs, launcher icon config, and native splash config.
+- **Testing:** Verified through repository flow tests and widget tests.
+- **Logging / Audit Trail:** Verified through `AuditLogs` table and audit repository usage.
+
+# 7. Database Analysis
+
+**Database Engine:** SQLite  
+**ORM:** Drift  
+**Schema Version:** 9
+
+The database schema is organized around rental operations. Core entities include properties, units, tenants, contracts, rent schedules, payments, utility bills, expenses, attachments, maintenance tickets, message templates, message logs, settings, and audit logs.
+
+Relationships are verified through Drift references between properties, tenants, contracts, payments, utility bills, units, rent schedules, and maintenance tickets. The schema uses auto-increment primary keys, foreign key references, nullable fields where appropriate, default values, and timestamp fields.
+
+Migrations are implemented through Drift `MigrationStrategy` with upgrade paths up to schema version 9.
+
+Explicit custom indexes were not verified.
+
+# 8. Security Analysis
+
+Verified mechanisms:
+
+- **Local authentication:** Implemented through `local_auth` in `LockService`.
+- **Biometric/PIN support:** Uses device-supported authentication with `biometricOnly: false`.
+- **Local data storage:** App stores data in local SQLite under the application documents directory.
+- **Repository-level validation:** Contract approval validates tenant/property consistency.
+- **Audit logging:** Important local operations are recorded in `audit_logs`.
+- **Secrets / environment variables:** No `.env` file or required environment variables verified.
+- **Remote authentication:** Not verified.
+- **Authorization / RBAC:** Not verified.
+- **JWT:** Not verified.
+- **OAuth:** Not verified.
+- **Session management:** Not verified.
+- **Password hashing:** Not verified.
+- **Security middleware:** Not verified.
+- **Rate limiting:** Not verified.
+- **CSRF / CORS:** Not applicable to the verified local mobile architecture.
+- **Input sanitization:** Not verified as a dedicated security layer.
+
+# 9. API Analysis
+
+The project does not expose a verified REST or GraphQL API.
+
+Verified integration boundaries:
+
+- Flutter UI calls Riverpod providers.
+- Providers call repository classes.
+- Repositories execute Drift/SQLite queries.
+- Services interact with platform APIs and external apps.
+- Messaging uses `url_launcher` for WhatsApp/SMS and `share_plus` for system sharing.
+- PDF services use local file generation and sharing.
+
+API versioning, REST documentation, GraphQL schema, request middleware, and server-side validation are not verified.
+
+# 10. Deployment & Infrastructure
+
+Verified:
+
+- Flutter Android project exists.
+- Flutter iOS project exists.
+- Build configuration exists in `pubspec.yaml`.
+- Native splash and launcher icon configuration exist.
+- Android Gradle configuration exists.
+- iOS Xcode project files exist.
+
+Not verified:
+
+- Hosting platform.
+- Cloud platform.
+- Docker.
+- Docker Compose.
+- Reverse proxy.
+- Apache.
+- Nginx.
+- SSL configuration.
+- CI/CD pipeline.
+- GitHub Actions.
+- Production deployment workflow.
+- Environment variable deployment setup.
+
+Build process is Flutter-based:
+
+```bash
+flutter pub get
+flutter test
+flutter build apk
+flutter build appbundle
+flutter build ios
+```
+
+# 11. Development Quality
+
+The codebase is organized with clear separation between app setup, feature screens, shared widgets, services, data repositories, and local database schema.
+
+Maintainability evidence:
+
+- Feature modules are separated under `lib/features/`.
+- Reusable widgets are centralized under `lib/shared/widgets/`.
+- Business data operations are centralized in repository classes.
+- Platform-specific behaviors are isolated in services.
+- Database schema is typed through Drift.
+- Tests cover important repository flows using an in-memory database.
+- Naming is domain-specific and generally consistent: properties, tenants, contracts, payments, rent schedules, utility bills, maintenance tickets, settings, and audit logs.
+
+Scalability is appropriate for a local-first mobile app. Server-side scaling, distributed deployment, and multi-user backend concerns are not verified.
+
+# 12. Engineering Competencies Demonstrated
+
+- Cross-platform Mobile Development
+- Flutter Development
+- Dart Development
+- Arabic RTL UI Development
+- Local-first Application Design
+- SQLite Database Design
+- Drift ORM Usage
+- Repository Pattern
+- Service Layer Design
+- State Management with Riverpod
+- Feature-Based Architecture
+- Transactional Data Handling
+- Database Migrations
+- Financial Workflow Modeling
+- Property Management Domain Modeling
+- PDF Generation
+- Local Notifications
+- WhatsApp/SMS Integration
+- File Sharing
+- Backup Export
+- Local Device Authentication
+- UI Component Reuse
+- Automated Testing
+- Widget Testing
+- In-memory Database Testing
+- Requirements Analysis
+- System Analysis
+- Technical Documentation
+
+# 13. ATS Resume Keywords
+
+**Mobile Development**
+
+- Flutter
+- Dart
+- Cross-platform Mobile Development
+- Android
+- iOS
+- Material 3
+- Arabic RTL
+- Responsive UI
+- Mobile UI Development
+
+**State Management and Architecture**
+
+- Riverpod
+- Provider
+- StreamProvider
+- Feature-Based Architecture
+- Layered Architecture
+- Repository Pattern
+- Service Layer
+- Dependency Injection
+- Modular Design
+- Clean Code
+
+**Database and Persistence**
+
+- SQLite
+- Drift ORM
+- Local Database
+- Database Schema Design
+- Database Migrations
+- Transaction Management
+- Data Modeling
+- Offline-first
+- Local-first Architecture
+
+**Business Logic**
+
+- Property Management
+- Rental Management
+- Lease Contracts
+- Payment Processing
+- Rent Scheduling
+- Utility Billing
+- Maintenance Tracking
+- Financial Reporting
+- Audit Logging
+
+**Integrations and Platform APIs**
+
+- PDF Generation
+- Printing
+- Local Notifications
+- Biometric Authentication
+- Device Authentication
+- File Picker
+- File Sharing
+- WhatsApp Integration
+- SMS Integration
+- URL Launcher
+
+**Testing and Quality**
+
+- Flutter Testing
+- Widget Testing
+- Unit Testing
+- In-memory Database Testing
+- Static Analysis
+- Flutter Lints
+
+# 14. Suggested Resume Entry
+
+**Milaak / مِلاك**
+
+**Project Type:** Cross-platform local-first property management mobile application
+
+Built a Flutter-based Arabic RTL mobile app for landlords and small property offices to manage properties, tenants, contracts, rent schedules, payments, utility bills, maintenance, reporting, and local records.
+
+- Developed a feature-based Flutter architecture with Riverpod state management, reusable UI widgets, and separated repository/service layers.
+- Designed and implemented a Drift/SQLite local database schema with migrations, relationships, transactional writes, audit logs, and rental-domain entities.
+- Built contract, payment, rent schedule, utility billing, and maintenance workflows with transaction-safe updates across related records.
+- Integrated PDF generation, local notifications, WhatsApp/SMS/share messaging, file backup export, and local biometric/PIN authentication.
+- Added Flutter widget tests and repository flow tests using an in-memory Drift database.
+
+**Technologies Used:** Flutter, Dart, Riverpod, Drift, SQLite, Material 3, go_router, fl_chart, pdf, printing, share_plus, url_launcher, local_auth, flutter_local_notifications, file_picker, path_provider, flutter_test.
